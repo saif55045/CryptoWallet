@@ -55,9 +55,12 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("🚀 Server starting on port %s", port)
+	address := "0.0.0.0:" + port
+	log.Printf("🚀 Server starting on %s", address)
+	log.Printf("📡 Listening on port %s", port)
+	
 	// Bind to 0.0.0.0 for Render/Docker compatibility
-	if err := router.Run("0.0.0.0:" + port); err != nil {
+	if err := router.Run(address); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
 }

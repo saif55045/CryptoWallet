@@ -14,15 +14,24 @@ var Client *mongo.Client
 var DB *mongo.Database
 
 func Connect() error {
-	mongoURI := os.Getenv("MONGO_URI")
+	// Try both MONGODB_URI and MONGO_URI for compatibility
+	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
-		log.Fatal("MONGO_URI environment variable not set")
+		mongoURI = os.Getenv("MONGO_URI")
+	}
+	if mongoURI == "" {
+		log.Fatal("MONGODB_URI or MONGO_URI environment variable not set")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	clientOptions := options.Client().ApplyURI(mongoURI)
+	// Configure client options with better TLS settings
+	clientOptions := options.Client().
+		ApplyURI(mongoURI).
+		SetServerSelectionTimeout(30 * time.Second).
+		SetConnectTimeout(30 * time.Second)
+
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		return err

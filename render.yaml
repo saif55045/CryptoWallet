@@ -1,9 +1,9 @@
 services:
   - type: web
     name: crypto-wallet-backend
-    env: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    env: go
+    buildCommand: cd backend && go build -o main .
+    startCommand: cd backend && ./main
     envVars:
       - key: PORT
         value: 10000

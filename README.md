@@ -1,8 +1,32 @@
-# 🔐 Crypto Wallet System - Complete Setup Guide
+# 🔐 Decentralized Cryptocurrency Wallet System
 
-## Module 1: User Authentication & Project Setup ✅
+A complete blockchain-based cryptocurrency wallet application with user authentication, wallet management, UTXO transactions, mining, zakat calculation, and admin panel. Built with Go, React, and MongoDB.
 
-This guide will help you set up and test Module 1 of the Decentralized Cryptocurrency Wallet System.
+## 🎯 Project Overview
+
+This is a full-stack decentralized cryptocurrency wallet system that implements a complete blockchain with proof-of-work mining, UTXO (Unspent Transaction Output) model, and advanced features like Merkle root verification and admin panel.
+
+### ✨ Features Completed
+
+#### Core Modules (7/7) ✅
+1. **User Authentication** - Signup, OTP verification, Login with JWT
+2. **Wallet System** - Generate wallets, view balance, manage multiple wallets
+3. **UTXO Model** - Track unspent outputs, prevent double spending
+4. **Transactions** - Send transactions with UTXO inputs/outputs
+5. **Blockchain** - Mine blocks with Proof-of-Work, Merkle root verification
+6. **Zakat Calculation** - Calculate Islamic zakat automatically
+7. **Reports & Logs** - Activity logs, transaction history, system logs
+
+#### Bonus Features (3/3) ✅
+1. **Google OAuth** - Sign in with Google account
+2. **Merkle Root Verification** - Cryptographic block verification
+3. **Admin Panel** - Complete admin dashboard with user/transaction management
+
+#### UI/UX ✅
+- Modern, clean light theme with Tailwind CSS
+- Responsive design (mobile, tablet, desktop)
+- Professional gradient backgrounds and animations
+- Intuitive navigation and user flows
 
 ---
 
@@ -10,32 +34,148 @@ This guide will help you set up and test Module 1 of the Decentralized Cryptocur
 
 ```
 Project/
-├── backend/           # Go backend server
+├── backend/                          # Go backend server (Gin + MongoDB)
 │   ├── config/
+│   │   └── cors.go
 │   ├── controllers/
+│   │   ├── auth_controller.go        # User authentication
+│   │   ├── wallet_controller.go      # Wallet management
+│   │   ├── utxo_controller.go        # UTXO transactions
+│   │   └── admin_controller.go       # Admin operations (NEW)
+│   ├── crypto/
+│   │   ├── encryption.go
+│   │   └── keys.go
 │   ├── database/
+│   │   └── connection.go
 │   ├── middleware/
+│   │   └── auth_middleware.go
 │   ├── models/
+│   │   ├── user.go
+│   │   ├── wallet.go
+│   │   └── utxo.go
 │   ├── routes/
+│   │   ├── auth_routes.go
+│   │   ├── wallet_routes.go
+│   │   ├── utxo_routes.go
+│   │   └── admin_routes.go           # Admin routes (NEW)
 │   ├── utils/
+│   │   ├── hash.go
+│   │   ├── jwt.go
+│   │   └── email.go
 │   ├── main.go
 │   ├── go.mod
+│   ├── Dockerfile                    # Docker configuration (NEW)
+│   ├── .dockerignore                 # Docker ignore rules (NEW)
 │   └── .env
-├── frontend/          # React frontend
+├── frontend/                         # React frontend (Tailwind CSS)
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── manifest.json
+│   │   └── robots.txt
 │   ├── src/
 │   │   ├── pages/
+│   │   │   ├── Login.js              # Login with Google OAuth (NEW)
+│   │   │   ├── Signup.js
+│   │   │   ├── VerifyOTP.js
+│   │   │   ├── Dashboard.js
+│   │   │   ├── WalletProfile.js
+│   │   │   ├── Beneficiaries.js
+│   │   │   └── Admin.js              # Admin panel (NEW)
+│   │   ├── components/
+│   │   │   └── Navbar.js             # Updated with Admin link
 │   │   ├── context/
+│   │   │   └── AuthContext.js        # Updated with Google OAuth
 │   │   ├── services/
-│   │   └── App.js
-│   └── package.json
-└── README_SETUP.md
+│   │   │   └── api.js                # Updated with admin API
+│   │   ├── App.js
+│   │   ├── App.css
+│   │   └── index.js
+│   ├── package.json
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── vercel.json                   # Vercel deployment config (NEW)
+│   └── .env
+├── render.yaml                       # Render deployment config (NEW)
+├── QUICKSTART.md                     # Quick start guide
+├── README_SETUP.md                   # Old setup guide
+└── README.md                         # This file
 ```
 
 ---
 
-## 🚀 Backend Setup (Go)
+## 🛠 Technology Stack
 
-### Step 1: Install Go
+### Backend
+- **Go 1.21+** - Programming language
+- **Gin Framework** - HTTP web framework
+- **MongoDB Atlas** - NoSQL database
+- **JWT** - Authentication tokens
+- **bcrypt** - Password hashing
+- **Google OAuth 2.0** - Third-party authentication
+
+### Frontend
+- **React 19.2.1** - UI library
+- **Tailwind CSS** - Styling framework
+- **React Router 7.10.1** - Client-side routing
+- **Axios** - HTTP client
+- **Google Identity Services** - OAuth integration
+
+### Deployment
+- **Render** - Backend hosting (native Go deployment)
+- **Vercel** - Frontend hosting (SPA with client-side routing)
+- **MongoDB Atlas** - Managed database service
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- Go 1.21+
+- Node.js 18+ and npm
+- MongoDB Atlas account (free tier available)
+- Google OAuth credentials (optional, for Google Sign-In)
+
+### Quickest Setup (5 minutes)
+
+1. **Clone and navigate to project**
+   ```bash
+   cd "d:\BSSE Notes\7th Semester\Blockchain\Project"
+   ```
+
+2. **Backend (.env configuration)**
+   ```bash
+   cd backend
+   ```
+   Create `.env` file:
+   ```env
+   MONGO_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@cluster0.xxxxx.mongodb.net/crypto_wallet?retryWrites=true&w=majority
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   PORT=8080
+   ENVIRONMENT=development
+   FRONTEND_URL=http://localhost:3000
+   ```
+
+3. **Run backend**
+   ```bash
+   go run main.go
+   ```
+   Backend runs at: `http://localhost:8080`
+
+4. **Frontend (new terminal)**
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+   Frontend opens at: `http://localhost:3000`
+
+---
+
+## 📖 Detailed Setup Instructions
+
+### Backend Setup (Go)
+
+#### Step 1: Install Go
 Make sure you have Go 1.21+ installed. Check with:
 ```bash
 go version

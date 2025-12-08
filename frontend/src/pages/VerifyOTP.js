@@ -76,7 +76,7 @@ const VerifyOTP = () => {
     setError('');
 
     try {
-      await api.post('/auth/verify-otp', { email, otp: otpString });
+      await api.auth.verifyOTP({ email, otp: otpString });
       setSuccess('Email verified successfully! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
@@ -92,7 +92,7 @@ const VerifyOTP = () => {
     if (!canResend) return;
     
     try {
-      await api.post('/auth/resend-otp', { email });
+      await api.auth.resendOTP({ email });
       setSuccess('New OTP sent to your email!');
       setResendTimer(60);
       setCanResend(false);

@@ -7,6 +7,7 @@ import (
 	"crypto-wallet-backend/utils"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -60,6 +61,8 @@ func Signup(c *gin.Context) {
 	otp := utils.GenerateOTP()
 	otpExpiry := time.Now().Add(10 * time.Minute)
 
+	log.Printf("🔐 [Signup] Generated OTP for %s: %s (Expires at: %v)", req.Email, otp, otpExpiry)
+
 	// Create user
 	user := models.User{
 		ID:           primitive.NewObjectID(),
@@ -97,9 +100,12 @@ func Signup(c *gin.Context) {
 func VerifyOTP(c *gin.Context) {
 	var req models.VerifyOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("❌ [VerifyOTP] Binding error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Printf("🔍 [VerifyOTP] Request received - Email: %s, OTP: %s", req.Email, req.OTP)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -108,27 +114,39 @@ func VerifyOTP(c *gin.Context) {
 	var user models.User
 	err := getUserCollection().FindOne(ctx, bson.M{"email": req.Email}).Decode(&user)
 	if err != nil {
+		log.Printf("❌ [VerifyOTP] User not found: %s, Error: %v", req.Email, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
+	log.Printf("✅ [VerifyOTP] User found - Email: %s, IsVerified: %v", user.Email, user.IsVerified)
+	log.Printf("🔑 [VerifyOTP] Stored OTP: %s, Received OTP: %s", user.OTP, req.OTP)
+	log.Printf("⏰ [VerifyOTP] OTP Expiry: %v, Current Time: %v", user.OTPExpiry, time.Now())
+
 	// Check if already verified
 	if user.IsVerified {
+		log.Printf("⚠️ [VerifyOTP] User already verified: %s", user.Email)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User already verified"})
 		return
 	}
 
 	// Check OTP expiry
 	if time.Now().After(user.OTPExpiry) {
+		log.Printf("⚠️ [VerifyOTP] OTP expired for: %s", user.Email)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "OTP has expired. Please request a new one."})
 		return
 	}
 
 	// Verify OTP
 	if user.OTP != req.OTP {
+		log.Printf("❌ [VerifyOTP] Invalid OTP - Expected: %s, Got: %s", user.OTP, req.OTP)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP"})
 		return
 	}
+
+	log.Printf("✅ [VerifyOTP] OTP matched! Verifying user: %s", user.Email)
+
+	log.Printf("✅ [VerifyOTP] OTP matched! Verifying user: %s", user.Email)
 
 	// Update user as verified
 	update := bson.M{
@@ -144,9 +162,12 @@ func VerifyOTP(c *gin.Context) {
 
 	_, err = getUserCollection().UpdateOne(ctx, bson.M{"_id": user.ID}, update)
 	if err != nil {
+		log.Printf("❌ [VerifyOTP] Failed to update user: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify user"})
 		return
 	}
+
+	log.Printf("🎉 [VerifyOTP] User successfully verified: %s", user.Email)
 
 	// Generate JWT token
 	token, err := utils.GenerateJWT(user.ID.Hex(), user.Email)

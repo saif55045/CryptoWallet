@@ -56,6 +56,7 @@ func main() {
 	}
 
 	address := "0.0.0.0:" + port
+	// address := ":" + port
 	log.Printf("🚀 Server starting on %s", address)
 	log.Printf("📡 Listening on port %s", port)
 	

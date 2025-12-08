@@ -8,9 +8,7 @@
 
 ## 📌 Quick Links
 
-- 🌐 **Live Frontend**: https://frontendcryptowallet1.vercel.app
-- 🔧 **Live Backend API**: https://cryptowallet-rsf1.onrender.com
-- 📂 **GitHub Repository**: https://github.com/saif55045/CryptoWallet
+- 🌐 **Live Frontend**: https://crypto-wallet-plum.vercel.app/
 - 📖 **Documentation**: See sections below
 
 ---
